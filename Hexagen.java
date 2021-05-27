@@ -5,24 +5,26 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 
 public class Hexagen {
-    public static void main(String[] args) {
-        CyclicBarrier cbr = new CyclicBarrier(3, new ThisIsIt());
-
+    public static void main(String[] args) throws InterruptedException {
+        CyclicBarrier cbr = new CyclicBarrier(3);
         ProstoClass ps = new ProstoClass();
-        for(int i = 0; i < 6; i++)  {
+
+        for(int i = 0; i < 4; i++)  {
             new Thread(new Hydrogen(cbr, ps)).start();
+            Thread.sleep(400);
         }
-        for(int i = 0; i < 6; i++ ) {
+        for(int i = 0; i < 4; i++ ) {
             new Thread(new Oxygen(cbr, ps)).start();
+            Thread.sleep(700);
         }
     }
 }
 
 class ProstoClass {
-    static Semaphore semHexy = new Semaphore(1);
+    static Semaphore semHexy = new Semaphore(2);
     static Semaphore semOxy = new Semaphore (0);
 
-    void releaseHexy(){
+    void releaseHydrogen(){
         try {
             semHexy.acquire();
         } catch (InterruptedException e) {
@@ -32,7 +34,7 @@ class ProstoClass {
         semOxy.release();
     }
 
-    void releaseOxy() {
+    void releaseOxygen() {
         try {
             semOxy.acquire();
         } catch (InterruptedException e) {
@@ -54,7 +56,6 @@ class Hydrogen implements Runnable {
 
     @Override
     public void run() {
-        ps.releaseHexy();
         try {
             cb.await();
         } catch (InterruptedException e) {
@@ -62,6 +63,7 @@ class Hydrogen implements Runnable {
         } catch (BrokenBarrierException e) {
             e.printStackTrace();
         }
+        ps.releaseHydrogen();
     }
 }
 
@@ -76,7 +78,6 @@ class Oxygen implements Runnable {
 
     @Override
     public void run() {
-        ps.releaseOxy();
         try {
             cb.await();
         } catch (InterruptedException e) {
@@ -84,14 +85,10 @@ class Oxygen implements Runnable {
         } catch (BrokenBarrierException e) {
             e.printStackTrace();
         }
+        ps.releaseOxygen();
     }
 }
 
-class ThisIsIt implements Runnable {
-    @Override
-    public void run() {
-        System.out.println("");
-    }
-}
+
 
 
