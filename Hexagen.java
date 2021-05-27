@@ -13,7 +13,7 @@ public class Hexagen {
             new Thread(new Hydrogen(cbr, ps)).start();
             Thread.sleep(400);
         }
-        for(int i = 0; i < 4; i++ ) {
+        for(int i = 0; i < 2; i++ ) {
             new Thread(new Oxygen(cbr, ps)).start();
             Thread.sleep(700);
         }
